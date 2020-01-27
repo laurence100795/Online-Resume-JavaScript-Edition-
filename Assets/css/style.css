@@ -59,6 +59,11 @@
     background-color: #e74c3c;
 }
 
+#loader {
+    display: block;
+    margin-left: auto;
+    width: 50%;
+}
 
 .map {
     width: 400px;
@@ -410,3 +415,4 @@ div#map {
         max-width: 50%;
     }
 }
+/*--------------------------------------------GitHub*/
