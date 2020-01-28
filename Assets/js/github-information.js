@@ -15,25 +15,50 @@ function userInformationHTML(user) {
         </div>`;
 }
 
-function fetchGitHubInformation(event) {
+function repoInformationHTML(repos) {
+    if(repos.length == 0){
+        return `<div class="clearfix repo-list">No Repos!</div>`;
+    }
 
+    var listItemsHTML = repos.map(function(repo){
+        return `<li>
+                    <a href="${repo.html_url}" target="_blank">${repo.name}</a>
+                </li>`;
+    });
+    
+    return `<div class="clearfix repo-list">
+                <p>
+                    <strong>Repo List:</strong>
+                </p>
+                    <ul>;
+                        ${listItemsHTML.join("\n")}
+                    </ul>
+            </div>`;
+};
+
+function fetchGitHubInformation(event) {
+        $("gh-user-data").html("");
+        $("gh-user-repo").html("");
     var username = $("#gh-username").val();
     if (!username) {
-        $("#gh-user-data").html(`<h2>Please enter a GitHub username</h2>`);
+        $("#gh-user-data").html(`<h2> Please enter a GitHub username</h2>`);
         return;
     }
 
     $("#gh-user-data").html(
         `<div id="loader">
-            <img src="assets/css/loader.gif" alt="loading..." />
+            <img src="Assets/css/loader.gif" alt="loading..." />
         </div>`);
 
     $.when(
-        $.getJSON(`https://api.github.com/users/${username}`)
+        $.getJSON(`https://api.github.com/users/${username}`),
+        $.getJSON(`https://api.github.com/users/${username}/repos`)
     ).then(
-        function(response) {
-            var userData = response;
+        function(firstResponse, secondResponse) {
+            var userData = firstResponse[0];
+            var repoData = secondResponse[0];
             $("#gh-user-data").html(userInformationHTML(userData));
+            $("#gh-repo-data").html(repoInformationHTML(repoData));
         },
         function(errorResponse) {
             if (errorResponse.status === 404) {
@@ -46,3 +71,5 @@ function fetchGitHubInformation(event) {
             }
         });
 }
+
+$(document).ready(fetchGitHubInformation);
